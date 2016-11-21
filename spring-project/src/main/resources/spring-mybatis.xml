@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:mybatis="http://mybatis.org/schema/mybatis-spring"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/aop
+	http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context.xsd
+	http://www.springframework.org/schema/tx
+	http://www.springframework.org/schema/tx/spring-tx.xsd
+	http://mybatis.org/schema/mybatis-spring
+	http://mybatis.org/schema/mybatis-spring.xsd">
+	
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		<property name="driverClassName" value="${jdbc.driverClassName}"/>
+		<property name="url" value="${jdbc.url}"/>
+		<property name="username" value="${jdbc.username}"/>
+		<property name="password" value="${jdbc.password}"/>
+		<!--数据库连接池初始连接数-->
+		<property name="initialSize" value="${initialSize}"/>
+		<!--最大连接数-->
+		<property name="maxActive" value="${maxActive}"/>
+		<!--最大空闲连接数-->
+		<property name="maxIdle" value="${maxIdle}"/>
+		<!--最小空闲连接数-->
+		<property name="minIdle" value="${minIdle}"/>
+		<!--检测数据库连接是否有效用的sql语句-->
+		<property name="validationQuery" value="${validationQuery}"/>
+		<!--租借数据库连接时是否验证有效性-->
+		<property name="testOnBorrow" value="${testOnBorrow}"/>
+		<!--数据库连接空闲时是否检测有效性-->
+		<property name="testWhileIdle" value="${testWhileIdle}"/>
+		<!--在回收事件后，在log中打印出回收Connection的错误信息-->
+		<property name="logAbandoned" value="${logAbandoned}"/>
+		<!--回收无效的connection-->
+		<property name="removeAbandoned" value="${removeAbandoned}"/>
+		<!--removeAbandonedTimeout（时间）未使用的connection会被回收-->
+		<property name="removeAbandonedTimeout" value="${removeAbandonedTimeout}"/>
+		<!--检查连接是否有效的时间间隔-->
+		<property name="timeBetweenEvictionRunsMillis" value="${timeBetweenEvictionRunsMillis}"/>
+		<!--销毁连接的最小空闲时间-->
+		<property name="minEvictableIdleTimeMillis" value="${minEvictableIdleTimeMillis}"/>
+		<!--每次检查有效性的时候检查的链接个数，与最大连接数相同-->
+		<property name="numTestsPerEvictionRun" value="${numTestsPerEvictionRun}"/>
+	</bean>
+	<!--数据库配置信息文件-->
+	<context:property-placeholder location="classpath:db.properties" />
+	<!--Mybatis SqlSessionFactoryBean ORM通过注解实现，不需要xml映射文件-->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource"/>
+	</bean>
+	<!--Mybatis 自动发现MapperBean-->
+	<mybatis:scan base-package="com.netease.course.dao" factory-ref="sqlSessionFactory"/>
+	<!--定义事务管理器-->
+	<bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource"/>
+	</bean>
+	<!--注解方式定义事务-->
+	<tx:annotation-driven transaction-manager="txManager"/>
+	<context:component-scan base-package="com.netease.course"/>
+	<aop:config proxy-target-class="true"/>
+	
+</beans>
