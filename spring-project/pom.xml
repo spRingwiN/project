@@ -28,7 +28,7 @@
 	<dependency>
 		<groupId>org.springframework</groupId>
 		<artifactId>spring-webmvc</artifactId>
-		<version>4.2.1.RELEASE</version>
+		<version>5.3.18</version>
 	</dependency>
 	<!--提供了spring跟第三方框架整合的工具类-->
 	<dependency>
